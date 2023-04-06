@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/home"
+            android:icon="@drawable/ic_baseline_home_24"
+            android:title="Home"></item>
+
+        <item android:id="@+id/share"
+            android:icon="@drawable/ic_baseline_share_24"
+            android:title="Share"></item>
+
+        <item android:id="@+id/replay"
+            android:icon="@drawable/ic_baseline_replay_24"
+            android:title="Replay"></item>
+
+        <item android:title="Menu">
+            <menu>
+                <group>
+                    <item android:id="@+id/share2"
+                        android:icon="@drawable/ic_baseline_share_24"
+                        android:title="Share"></item>
+
+                    <item android:id="@+id/replay2"
+                        android:icon="@drawable/ic_baseline_replay_24"
+                        android:title="Replay"></item>
+                </group>
+
+            </menu>
+        </item>
+
+
+
+
+
+    </group>
+</menu>
