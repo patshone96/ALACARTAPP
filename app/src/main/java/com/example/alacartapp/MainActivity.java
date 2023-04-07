@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
@@ -15,8 +14,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> alergens = new ArrayList<>();
         alergens.add("Cacahuetes");
 
-        Dish dish = new Dish("Marinado", ingredientes, alergens, 15.5, "Muy sabroso", "https://www.marisco.es");
+        Dish dish = new Dish("Marinado", ingredientes, alergens, 15.5, "Muy sabroso", "https://www.cocinacaserayfacil.net/wp-content/uploads/2015/10/Espagueti-a-la-bolo%C3%B1esa.jpg");
 
         dishes.add(dish);
         dishes.add(dish);

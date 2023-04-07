@@ -1,13 +1,20 @@
 package com.example.alacartapp;
 
+import static java.security.AccessController.getContext;
+
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +68,7 @@ implements View.OnClickListener{
 
     public class ViewHolderDishes extends RecyclerView.ViewHolder {
 
-        TextView image_url;
+        ImageView image_url;
         TextView name;
         TextView price;
         TextView allergens;
@@ -75,11 +82,16 @@ implements View.OnClickListener{
             price = itemView.findViewById(R.id.price);
             allergens = itemView.findViewById(R.id.allergens);
 
+
+
         }
 
         @SuppressLint("DefaultLocale")
         public void assignDish(Dish dish) {
-            image_url.setText(dish.getImage_url());
+            Glide.with(itemView)
+                    .load(dish.getImage_url())
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .into(image_url);
             name.setText(dish.getName());
             price.setText(String.format("%s", dish.getPrice()));
             allergens.setText(dish.getStringAllergens());

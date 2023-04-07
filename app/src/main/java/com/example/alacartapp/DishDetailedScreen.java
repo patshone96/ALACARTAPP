@@ -5,11 +5,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
 public class DishDetailedScreen extends AppCompatActivity {
 
-    TextView ivDetailedImage;
+    ImageView ivDetailedImage;
     TextView tvDetailedName;
     TextView tvDetailedPrice;
     TextView tvDetailedAllergens;
@@ -42,7 +46,11 @@ public class DishDetailedScreen extends AppCompatActivity {
         tvDetailedIngredients.setMovementMethod(new ScrollingMovementMethod());
         tvDetailedDescription.setMovementMethod(new ScrollingMovementMethod());
 
-        ivDetailedImage.setText(dish.getImage_url());
+        Glide.with(this)
+                .load(dish.getImage_url())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(ivDetailedImage);
+
         tvDetailedName.setText(dish.getName());
         tvDetailedPrice.setText(dish.getPrice()+"");
         tvDetailedIngredients.setText(dish.getIngredients().toString());

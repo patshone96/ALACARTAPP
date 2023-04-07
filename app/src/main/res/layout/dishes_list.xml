@@ -13,11 +13,12 @@
         android:orientation="horizontal"
         android:padding="5dp">
 
-        <TextView
+        <ImageView
             android:id="@+id/image_url"
             android:layout_width="88dp"
             android:layout_height="90dp"
-            android:contentDescription="" />
+            android:contentDescription="Image"
+            android:scaleType="centerCrop"/>
 
 
         <LinearLayout
