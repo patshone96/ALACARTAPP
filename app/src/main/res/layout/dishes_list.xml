@@ -7,7 +7,7 @@
     android:paddingBottom="5dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="109dp"
         android:layout_margin="5dp"
         android:orientation="horizontal"
@@ -18,7 +18,8 @@
             android:layout_width="88dp"
             android:layout_height="90dp"
             android:contentDescription="Image"
-            android:scaleType="centerCrop"/>
+            android:paddingEnd="15dp"
+            android:scaleType="centerCrop" />
 
 
         <LinearLayout
