@@ -2,6 +2,11 @@ package com.example.alacartapp;
 
 import android.app.AlertDialog;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.security.AllPermission;
 import java.util.ArrayList;
@@ -25,6 +30,7 @@ public class Dish implements Serializable {
         this.description = description;
         this.image_url = image_url;
     }
+
 
     public String getName() {
         return name;
@@ -84,4 +90,5 @@ public class Dish implements Serializable {
         return out;
 
     }
+
 }
