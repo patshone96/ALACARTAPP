@@ -6,24 +6,43 @@
             android:icon="@drawable/ic_baseline_home_24"
             android:title="Home"></item>
 
-        <item android:id="@+id/share"
-            android:icon="@drawable/ic_baseline_share_24"
-            android:title="Share"></item>
-
-        <item android:id="@+id/replay"
-            android:icon="@drawable/ic_baseline_replay_24"
-            android:title="Replay"></item>
-
-        <item android:title="Menu">
+        <item android:title="Dietas especiales">
             <menu>
                 <group>
-                    <item android:id="@+id/share2"
-                        android:icon="@drawable/ic_baseline_share_24"
-                        android:title="Share"></item>
 
-                    <item android:id="@+id/replay2"
-                        android:icon="@drawable/ic_baseline_replay_24"
-                        android:title="Replay"></item>
+                    <item android:id="@+id/veggie"
+                        android:icon="@drawable/ic_baseline_vegetarian_24"
+                        android:title="Vegetariano">
+
+                    </item>
+
+                </group>
+            </menu>
+
+        </item>
+
+
+        <item android:title="Alérgenos">
+            <menu>
+                <group>
+                    <item android:id="@+id/egg"
+                        android:icon="@drawable/ic_baseline_egg_24"
+                        android:title="Huevo">
+                    </item>
+
+                    <item android:id="@+id/seafood"
+                        android:icon="@drawable/icons8_seafood"
+                        android:title="Marisco">
+                    </item>
+
+                    <item android:id="@+id/nuts"
+                        android:icon="@drawable/icons8_nut_30"
+                        android:title="Frutos Secos">
+                    </item>
+
+                    <item android:id="@+id/gluten"
+                        android:icon="@drawable/ic_baseline_gluten_24"
+                        android:title="Gluten"></item>
                 </group>
 
             </menu>

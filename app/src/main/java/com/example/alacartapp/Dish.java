@@ -19,6 +19,7 @@ public class Dish implements Serializable {
     private Double price;
     private String description;
     private String image_url;
+    private ArrayList<String> diet;
 
     public Dish(){}
 
@@ -29,6 +30,16 @@ public class Dish implements Serializable {
         this.price = price;
         this.description = description;
         this.image_url = image_url;
+    }
+
+    public Dish(String name, ArrayList<String> ingredients, ArrayList<String> allergens, Double price, String description, String image_url, ArrayList<String> diet) {
+        this.name = name;
+        this.ingredients = ingredients;
+        this.allergens = allergens;
+        this.price = price;
+        this.description = description;
+        this.image_url = image_url;
+        this.diet = diet;
     }
 
 
@@ -89,6 +100,14 @@ public class Dish implements Serializable {
 
         return out;
 
+    }
+
+    public ArrayList<String> getDiet() {
+        return diet;
+    }
+
+    public void setDiet(ArrayList<String> diet) {
+        this.diet = diet;
     }
 
 }
