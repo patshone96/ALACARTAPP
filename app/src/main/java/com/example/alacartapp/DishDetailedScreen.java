@@ -5,8 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
@@ -19,6 +22,7 @@ public class DishDetailedScreen extends AppCompatActivity {
     TextView tvDetailedAllergens;
     TextView tvDetailedIngredients;
     TextView tvDetailedDescription;
+    ImageView ivTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +45,7 @@ public class DishDetailedScreen extends AppCompatActivity {
         tvDetailedAllergens = findViewById(R.id.tvDetaileAllergens);
         tvDetailedIngredients = findViewById(R.id.tvDetailedIngredients);
         tvDetailedDescription = findViewById(R.id.tvDetailedDescription);
+        ivTitle = findViewById(R.id.ivTitle);
 
         //Set a scroll behavior to elements that will need it
         tvDetailedIngredients.setMovementMethod(new ScrollingMovementMethod());
@@ -52,10 +57,19 @@ public class DishDetailedScreen extends AppCompatActivity {
                 .into(ivDetailedImage);
 
         tvDetailedName.setText(dish.getName());
-        tvDetailedPrice.setText(dish.getPrice()+"");
-        tvDetailedIngredients.setText(dish.getIngredients().toString());
-        tvDetailedAllergens.setText(dish.getAllergens().toString());
+        tvDetailedPrice.setText(dish.getPrice());
+        tvDetailedIngredients.setText(dish.getStringIngredients());
+        tvDetailedAllergens.setText(dish.getStringAllergens());
         tvDetailedDescription.setText(dish.getDescription());
+
+        ivTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CharSequence text = "Menú principal";
+                Toast.makeText(getApplicationContext(), text , Toast.LENGTH_SHORT).show();
+                onBackPressed();
+            }
+        });
 
 
     }

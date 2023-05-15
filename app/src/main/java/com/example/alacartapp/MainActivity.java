@@ -15,6 +15,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 // For Firebase
@@ -32,6 +34,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 
@@ -46,15 +49,26 @@ public class MainActivity extends AppCompatActivity {
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
 
+
+    EditText inputIngredient;
+    Button btnIngredient;
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        inputIngredient = findViewById(R.id.inputIngredient);
+        btnIngredient = findViewById(R.id.btnSearch);
+
 
         recyclerView = findViewById(R.id.recyclerDish);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
         dishes = new ArrayList<>();
+
 
 
         // DRAWER
@@ -65,11 +79,16 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
+
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         //Reset dishes
         dishes.clear();
 
@@ -111,6 +130,77 @@ public class MainActivity extends AppCompatActivity {
         }).addOnFailureListener(Throwable::printStackTrace);
 
 
+        //Searchbar
+
+        inputIngredient.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean focus) {
+                if(focus)
+                    inputIngredient.setHint("");
+                else
+                    inputIngredient.setHint("Ingrediente");
+            }
+        });
+
+        btnIngredient.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                CollectionReference collectionRef = db.collection("dishes");
+                Query query;
+                AdapterDishes adapterDishes = new AdapterDishes(dishes);
+
+
+                String name = String.valueOf(inputIngredient.getText());
+                String cap = "";
+                if(name.length() >= 1 ){
+                    cap = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+                }
+
+
+                //query = collectionRef.whereEqualTo("name", name);
+
+                query = collectionRef.whereArrayContains("ingredients", cap);
+
+                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            dishes.clear();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Dish plato = document.toObject(Dish.class);
+                                dishes.add(plato);
+                            }
+                            recyclerView.setAdapter(adapterDishes);
+
+                            adapterDishes.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    intent.putExtra("dish", (Serializable) dishes.get(recyclerView.getChildAdapterPosition(view)));
+
+                                    //We initiate the new activity
+                                    startActivity(intent);
+                                }
+                            });
+
+
+                        } else {
+                            try {
+                                throw new Exception();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+
+            }
+        });
+
+
+
+
+
         //Add filters
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -119,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
                         CollectionReference collectionRef = db.collection("dishes");
                         Query query;
+                        AdapterDishes adapterDishes = new AdapterDishes(dishes);
 
                         switch(item.getItemId()){
                             case R.id.home:
@@ -130,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
                                 future.addOnSuccessListener(querySnapshot -> {
                                     List<DocumentSnapshot> documents = querySnapshot.getDocuments();
 
-                                    AdapterDishes adapterDishes = new AdapterDishes(dishes);
+                                   dishes.clear();
 
                                     for (DocumentSnapshot document: documents) {
                                         Dish plato = document.toObject(Dish.class);
@@ -170,7 +261,19 @@ public class MainActivity extends AppCompatActivity {
                                                 Dish plato = document.toObject(Dish.class);
                                                 dishes.add(plato);
                                             }
-                                            recyclerView.setAdapter(new AdapterDishes(dishes));
+                                            recyclerView.setAdapter(adapterDishes);
+
+                                            adapterDishes.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    intent.putExtra("dish", (Serializable) dishes.get(recyclerView.getChildAdapterPosition(view)));
+
+                                                    //We initiate the new activity
+                                                    startActivity(intent);
+                                                }
+                                            });
+
+
 
                                         } else {
                                             try {
@@ -186,109 +289,162 @@ public class MainActivity extends AppCompatActivity {
 
                             case R.id.gluten:
 
-                                query = collectionRef.whereArrayContains("allergens", "gluten");
-
-                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
+                                collectionRef.get()
+                                        .addOnSuccessListener(querySnapshot -> {
+                                            List<DocumentSnapshot> docsWithoutGluten = new ArrayList<>();
+                                            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                                                List<String> allergens = (List<String>) document.get("allergens");
+                                                if (allergens == null || !allergens.contains("gluten")) {
+                                                    docsWithoutGluten.add(document);
+                                                }
+                                            }
                                             dishes.clear();
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                            for (DocumentSnapshot document : docsWithoutGluten) {
                                                 Dish plato = document.toObject(Dish.class);
                                                 dishes.add(plato);
                                             }
-                                            recyclerView.setAdapter(new AdapterDishes(dishes));
 
-                                        } else {
-                                            try {
-                                                throw new Exception();
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-                                });
+                                            recyclerView.setAdapter(adapterDishes);
+
+                                            adapterDishes.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    intent.putExtra("dish", (Serializable) dishes.get(recyclerView.getChildAdapterPosition(view)));
+
+                                                    //We initiate the new activity
+                                                    startActivity(intent);
+                                                }
+                                            });
+
+                                        })
+                                        .addOnFailureListener(Throwable::printStackTrace);
+
+
+
+//                                query = collectionRef.whereArrayContains("allergens", "gluten");
+//
+//                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                                        if (task.isSuccessful()) {
+//                                            dishes.clear();
+//                                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                                Dish plato = document.toObject(Dish.class);
+//                                                dishes.add(plato);
+//                                            }
+//                                            recyclerView.setAdapter(new AdapterDishes(dishes));
+//
+//                                        } else {
+//                                            try {
+//                                                throw new Exception();
+//                                            } catch (Exception e) {
+//                                                e.printStackTrace();
+//                                            }
+//                                        }
+//                                    }
+//                                });
 
                                 break;
 
                             case R.id.egg:
 
-                                query = collectionRef.whereArrayContains("allergens", "huevo");
-
-                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
+                                collectionRef.get()
+                                        .addOnSuccessListener(querySnapshot -> {
+                                            List<DocumentSnapshot> docsWithoutGluten = new ArrayList<>();
+                                            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                                                List<String> allergens = (List<String>) document.get("allergens");
+                                                if (allergens == null || !allergens.contains("huevo")) {
+                                                    docsWithoutGluten.add(document);
+                                                }
+                                            }
                                             dishes.clear();
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                            for (DocumentSnapshot document : docsWithoutGluten) {
                                                 Dish plato = document.toObject(Dish.class);
                                                 dishes.add(plato);
                                             }
-                                            recyclerView.setAdapter(new AdapterDishes(dishes));
 
-                                        } else {
-                                            try {
-                                                throw new Exception();
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-                                });
+                                            recyclerView.setAdapter(adapterDishes);
+
+                                            adapterDishes.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    intent.putExtra("dish", (Serializable) dishes.get(recyclerView.getChildAdapterPosition(view)));
+
+                                                    //We initiate the new activity
+                                                    startActivity(intent);
+                                                }
+                                            });
+
+                                        })
+                                        .addOnFailureListener(Throwable::printStackTrace);
+
 
                                 break;
 
                             case R.id.nuts:
 
-                                query = collectionRef.whereArrayContains("allergens", "frutosSecos");
-
-                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
+                                collectionRef.get()
+                                        .addOnSuccessListener(querySnapshot -> {
+                                            List<DocumentSnapshot> docsWithoutGluten = new ArrayList<>();
+                                            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                                                List<String> allergens = (List<String>) document.get("allergens");
+                                                if (allergens == null || !allergens.contains("frutosSecos")) {
+                                                    docsWithoutGluten.add(document);
+                                                }
+                                            }
                                             dishes.clear();
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                            for (DocumentSnapshot document : docsWithoutGluten) {
                                                 Dish plato = document.toObject(Dish.class);
                                                 dishes.add(plato);
                                             }
-                                            recyclerView.setAdapter(new AdapterDishes(dishes));
 
-                                        } else {
-                                            try {
-                                                throw new Exception();
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-                                });
+                                            recyclerView.setAdapter(adapterDishes);
+                                            adapterDishes.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    intent.putExtra("dish", (Serializable) dishes.get(recyclerView.getChildAdapterPosition(view)));
+
+                                                    //We initiate the new activity
+                                                    startActivity(intent);
+                                                }
+                                            });
+
+                                        })
+                                        .addOnFailureListener(Throwable::printStackTrace);
 
                                 break;
 
                             case R.id.seafood:
 
-                                query = collectionRef.whereArrayContains("allergens", "marisco");
-
-                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
+                                collectionRef.get()
+                                        .addOnSuccessListener(querySnapshot -> {
+                                            List<DocumentSnapshot> docsWithoutGluten = new ArrayList<>();
+                                            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                                                List<String> allergens = (List<String>) document.get("allergens");
+                                                if (allergens == null || !allergens.contains("marisco")) {
+                                                    docsWithoutGluten.add(document);
+                                                }
+                                            }
                                             dishes.clear();
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                            for (DocumentSnapshot document : docsWithoutGluten) {
                                                 Dish plato = document.toObject(Dish.class);
                                                 dishes.add(plato);
                                             }
-                                            recyclerView.setAdapter(new AdapterDishes(dishes));
 
-                                        } else {
-                                            try {
-                                                throw new Exception();
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-                                });
+                                            recyclerView.setAdapter(adapterDishes);
+
+                                            adapterDishes.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    intent.putExtra("dish", (Serializable) dishes.get(recyclerView.getChildAdapterPosition(view)));
+
+                                                    //We initiate the new activity
+                                                    startActivity(intent);
+                                                }
+                                            });
+
+                                        })
+                                        .addOnFailureListener(Throwable::printStackTrace);
 
                                 break;
                         }
@@ -317,13 +473,13 @@ public class MainActivity extends AppCompatActivity {
         //Same as using the negativebUTTON
         constructor.setCancelable(true);
 
-        //stablish the negative button using a lambda
+        //Establish the negative button using a lambda
         constructor.setNegativeButton("No", (DialogInterface.OnClickListener)
                 (dialog, which) -> {
                     dialog.cancel();
                 });
 
-        //Stablish the positive button the same way
+        //Establish the positive button the same way
         constructor.setPositiveButton("Sí", (DialogInterface.OnClickListener)
                 (dialog, which) -> {
                     //Lanzamos el intent de salida

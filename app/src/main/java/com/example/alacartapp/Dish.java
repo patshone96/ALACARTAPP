@@ -67,8 +67,8 @@ public class Dish implements Serializable {
         this.allergens = allergens;
     }
 
-    public Double getPrice() {
-        return price;
+    public String getPrice() {
+        return price + " €";
     }
 
     public void setPrice(Double price) {
@@ -102,12 +102,28 @@ public class Dish implements Serializable {
 
     }
 
+    public String getStringIngredients(){
+        String out = "";
+
+        for(int i = 0; i < this.ingredients.size(); i++){
+            out+= "· " + this.ingredients.get(i) + " \n";
+        }
+
+        return out;
+
+    }
+
     public ArrayList<String> getDiet() {
         return diet;
     }
 
     public void setDiet(ArrayList<String> diet) {
         this.diet = diet;
+    }
+
+    public String shortName(){
+        if (this.name.length() > 15) return this.getName().substring(0, 15);
+        return name;
     }
 
 }

@@ -92,7 +92,7 @@ implements View.OnClickListener{
                     .load(dish.getImage_url())
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(image_url);
-            name.setText(dish.getName());
+            name.setText(dish.shortName());
             price.setText(String.format("%s", dish.getPrice()));
             allergens.setText(dish.getStringAllergens());
         }
