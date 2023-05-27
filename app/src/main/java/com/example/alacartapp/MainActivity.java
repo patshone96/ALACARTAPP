@@ -17,7 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+
 
 // For Firebase
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     EditText inputIngredient;
     Button btnIngredient;
 
+    String databaseName = "";
+
 
 
 
@@ -79,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Database access
+        databaseName = getIntent().getStringExtra("database");
 
 
 
@@ -99,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, DishDetailedScreen.class);
 
         // Get a reference to the Firestore collection
-        CollectionReference cr = db.collection("dishes");
+        CollectionReference cr = db.collection(databaseName);
 
         // Retrieve a series of SnapShots and store it on the variable future
         Task<QuerySnapshot> future = cr.get();
@@ -146,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
-                CollectionReference collectionRef = db.collection("dishes");
+                CollectionReference collectionRef = db.collection(databaseName);
                 Query query;
                 AdapterDishes adapterDishes = new AdapterDishes(dishes);
 
@@ -207,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        CollectionReference collectionRef = db.collection("dishes");
+                        CollectionReference collectionRef = db.collection(databaseName);
                         Query query;
                         AdapterDishes adapterDishes = new AdapterDishes(dishes);
 
@@ -318,32 +322,6 @@ public class MainActivity extends AppCompatActivity {
 
                                         })
                                         .addOnFailureListener(Throwable::printStackTrace);
-
-
-
-//                                query = collectionRef.whereArrayContains("allergens", "gluten");
-//
-//                                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                                    @Override
-//                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                                        if (task.isSuccessful()) {
-//                                            dishes.clear();
-//                                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                                Dish plato = document.toObject(Dish.class);
-//                                                dishes.add(plato);
-//                                            }
-//                                            recyclerView.setAdapter(new AdapterDishes(dishes));
-//
-//                                        } else {
-//                                            try {
-//                                                throw new Exception();
-//                                            } catch (Exception e) {
-//                                                e.printStackTrace();
-//                                            }
-//                                        }
-//                                    }
-//                                });
-
                                 break;
 
                             case R.id.egg:
@@ -445,7 +423,6 @@ public class MainActivity extends AppCompatActivity {
 
                                         })
                                         .addOnFailureListener(Throwable::printStackTrace);
-
                                 break;
                         }
                         return false;

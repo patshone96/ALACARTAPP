@@ -5,4 +5,5 @@
     <string name="close">Close Drawer</string>
     <string name="hintPrompt">Ingrediente</string>
     <string name="btnSearch">Buscar</string>
+    <string name="tvCameraScreen">Escanea el código del restaurante</string>
 </resources>

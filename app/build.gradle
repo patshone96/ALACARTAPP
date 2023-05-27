@@ -47,12 +47,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:latest'
     implementation 'com.google.api:api-common:1.10.0'
 
-
-
-
     implementation 'com.fasterxml.jackson.core:jackson-core:2.13.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
+
+    // Camera
+    implementation 'com.google.zxing:core:3.4.1'
 
 
 }
